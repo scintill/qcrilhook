@@ -47,16 +47,19 @@ public class RilExtender extends IRilExtender.Stub {
     public static final int VERSION = 9;
 
     public static boolean onPhoneServiceTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-        //Log.d(TAG, "onTransact " + code + " " + android.os.Process.myPid());
+        Log.d(TAG, "onTransact " + code + " " + android.os.Process.myPid());
         switch(code) {
-            case LAST_CALL_TRANSACTION:
+            /*case LAST_CALL_TRANSACTION:
                 return getInstance().onTransact(TRANSACTION_oemRilRequestStrings, data, reply, flags);
             case LAST_CALL_TRANSACTION-1:
-                return getInstance().onTransact(TRANSACTION_oemRilRequestRaw, data, reply, flags);
+                return getInstance().onTransact(TRANSACTION_oemRilRequestRaw, data, reply, flags);*/
+
             case TRANSACTION_iccIOForApp:
             case TRANSACTION_pingRilExtender:
             case TRANSACTION_getBirthDate:
             case TRANSACTION_getVersion:
+            case TRANSACTION_oemRilRequestStrings:
+            case TRANSACTION_oemRilRequestRaw:
                 // Our transaction codes overlap with the original phone service -- is
                 // the caller trying to reach us?
                 data.readInt();
@@ -76,6 +79,7 @@ public class RilExtender extends IRilExtender.Stub {
         }
     }
 
+    @Override
     public byte[] iccIOForApp(int command, int fileId, String path, int p1, int p2, int p3, String data, String pin2, String aid) {
         try {
             return iccIOForAppImpl(command, fileId, path, p1, p2, p3, data, pin2, aid);
@@ -181,8 +185,8 @@ public class RilExtender extends IRilExtender.Stub {
     }
 
     @Override
-    public byte[] oemRilRequestRaw(final String requestArgHex) {
-        Log.d(TAG, "oemRilRequestRaw "+requestArgHex);
+    public byte[] oemRilRequestRaw(final byte[] reqBytes) {
+        Log.d(TAG, "oemRilRequestRaw "+reqBytes);
 
         final Message tmpMessage = Message.obtain();
         final Message receivedMessage;
@@ -195,7 +199,7 @@ public class RilExtender extends IRilExtender.Stub {
 
                         RIL.getClass().getMethod("invokeOemRilRequestRaw",
                                 byte[].class, Message.class)
-                                .invoke(RIL, new BigInteger(requestArgHex, 16).toByteArray(), tmpMessage);
+                                .invoke(RIL, reqBytes, tmpMessage);
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         throw new RuntimeException(e);
                     }

@@ -127,7 +127,7 @@ public class RilExtenderCommandsInterface implements CommandsInterface {
         result.sendToTarget();
     }
 
-    private IRilExtender getIRilExtender() {
+    public IRilExtender getIRilExtender() {
         try {
             return IRilExtender.Stub.asInterface((IBinder)
                     Class.forName("android.os.ServiceManager")

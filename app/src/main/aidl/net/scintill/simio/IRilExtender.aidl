@@ -36,6 +36,6 @@ interface IRilExtender {
 
     String[] oemRilRequestStrings(in String[] requestArgs);
 
-    byte[] oemRilRequestRaw(String requestArgHex);
+    byte[] oemRilRequestRaw(in byte[] requestBytes);
 
 }

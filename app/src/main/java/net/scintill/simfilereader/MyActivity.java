@@ -34,13 +34,18 @@ import android.widget.TextView;
 
 import com.SecUpwN.AIMSICD.utils.Helpers;
 
+import net.scintill.qcrilhook.IQcNvItems;
+import net.scintill.qcrilhook.ISemcRilHook;
+import net.scintill.qcrilhook.closedsourceshim.QcNvItems;
+import net.scintill.qcrilhook.closedsourceshim.QcRilHook;
 import net.scintill.simio.CardApplication;
-import net.scintill.simio.telephony.CommandsInterface;
 import net.scintill.simio.CommandsInterfaceFactory;
+import net.scintill.simio.telephony.CommandsInterface;
 import net.scintill.simio.telephony.uicc.IccUtils;
 import net.scintill.simio.telephony.uicc.SIMRecords;
 import net.scintill.simio.telephony.uicc.UiccCardApplication;
 
+import java.io.IOException;
 
 public class MyActivity extends Activity {
 
@@ -110,6 +115,8 @@ public class MyActivity extends Activity {
 
                                 TextView textViewResults = (TextView)MyActivity.this.findViewById(R.id.results);
                                 textViewResults.setText(results);
+
+                                qcrilhookTests();
                             }
                         });
                     }
@@ -136,4 +143,81 @@ public class MyActivity extends Activity {
             mCommandsInterface.dispose();
         }
     }
+
+    private static ISemcRilHook rilHook = null;
+    private static IQcNvItems nvItems = null;
+
+    private void qcrilhookTests() {
+        if (rilHook == null) {
+            // make these persistent, because first call fails while QC service isn't connected
+
+            rilHook = new net.scintill.qcrilhook.closedsourceshim.SemcRilHook(this.getApplicationContext()/*new OemRilCommandsInterface() {
+            @Override
+            public Object invokeOemRilRequestRaw(ByteBuffer b, int subscription) {
+                RilExtenderCommandsInterface commandsInterface = new RilExtenderCommandsInterface(MyActivity.this.getApplicationContext());
+                try {
+                    commandsInterface.getIRilExtender().oemRilRequestRaw(b.array());
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                return null;
+            }
+        }*/);
+            nvItems = new QcNvItems((QcRilHook)rilHook);
+        }
+
+        /*try {
+            rilHook.setFieldTestMode(0, (byte) 0, 1);
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while setting field test mode", e);
+        }
+
+        try {
+            Log.e(TAG, "Cipher indicator=" + IccUtils.bytesToHexString(rilHook.getCipherIndicator()));
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while getting cipher indicator", e);
+        }
+
+        try {
+            Log.e(TAG, "Speech codec=" + IccUtils.bytesToHexString(rilHook.getSpeechCodec()));
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while getting speech codec", e);
+        }
+
+        try {
+            Log.e(TAG, "Active band=" + IccUtils.bytesToHexString(rilHook.getActiveBand()));
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while getting active band", e);
+        }*/
+
+        StringBuffer configs = new StringBuffer();
+        try {
+            for (String s : rilHook.getAvailableConfigs("GSM")) {
+                configs.append(s).append("\n");
+            }
+            Log.e(TAG, "Avail configs=" + configs);
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while getting avail configs", e);
+        }
+
+        /*try {
+            rilHook.unregisterForFtmLiveUpdate(ISemcRilHook.NetworkType.GSM);
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while registering FTM", e);
+        }
+
+        try {
+            IQcNvItems.AutoAnswer aa = nvItems.getAutoAnswer();
+            Log.d(TAG, "Auto answer " + aa.enable + " " + aa.rings);
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while checking autoanswer", e);
+        }
+
+        try {
+            Log.d(TAG, "IMEI=" + rilHook.readNvSemc(457));
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while reading IMEI", e);
+        }*/
+    }
+
 }

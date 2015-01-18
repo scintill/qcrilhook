@@ -16,6 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <uses-library android:name="com.qualcomm.qcrilhook" android:required="true" />
+        <uses-library android:name="com.qualcomm.qcnvitems" android:required="true" />
+        <uses-library android:name="semcrilextension" android:required="true" />
+
     </application>
 
 </manifest>
