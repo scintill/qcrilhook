@@ -16,7 +16,7 @@ You'll need some variant of the following, depending on your exact usage:
 <uses-library android:name="semcrilextension" android:required="true" />
 ```
     
-These refer to libraries that are installed in /system/framework, so the compiled app requires a ROM that includes them.
+These refer to libraries that are installed in /system/framework, so the compiled app requires a ROM that includes them (such as many shipped ROMs for Qualcomm devices -- AOSP etc. probably won't have these libraries.)
 
 ## Generic Qualcomm Features
 
